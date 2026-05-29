@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<section class="hero-section py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="hero-card text-center px-4 py-5 shadow-sm">
+                    <h1 class="fw-bold mb-4">Choose and it is in your hands.</h1>
+                    <p class="lead text-muted mb-4">Browse and make the best deal</p>
+                    <a href="#" class="btn btn-success btn-lg">Create an account</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="album py-5">
+    <div class="container">
+        <div class="pb-3 h5">All products</div>
+        <hr />
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-5 g-4">
+            {% for product in products %}
+            <div class="col">
+                <a class="text-decoration-none text-dark" href="{{ product.get_absolute_url }}">
+                    <div class="card product-card h-100 shadow-sm">
+                        <img src="{{ product.image.url }}" class="card-img-top w-100" alt="{{ product.title }}" />
+                        <div class="card-body">
+                            <h5 class="card-title">{{ product.title|capfirst }}</h5>
+                            <p class="card-text text-success fw-bold">$ {{ product.price }}</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+{% endblock %}

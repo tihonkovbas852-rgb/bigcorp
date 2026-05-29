@@ -1,0 +1,161 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <link rel="stylesheet" href="https://bootswatch.com/5/flatly/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+
+    <title>{% block title %}Home{% endblock %}</title>
+
+    <style>
+        .topbar {
+            background: #f8f9fa;
+            font-size: .85rem;
+            color: #495057;
+        }
+        .topbar a {
+            color: #495057;
+            text-decoration: none;
+        }
+        .topbar a:hover {
+            color: #212529;
+            text-decoration: underline;
+        }
+        .site-search .form-control {
+            min-width: 240px;
+        }
+        .hero-section {
+            background: #f8f9fa;
+        }
+        .hero-card {
+            background: rgba(255,255,255,.95);
+            border: 1px solid #e9ecef;
+            border-radius: 1rem;
+        }
+        .product-card img {
+            object-fit: cover;
+            min-height: 220px;
+        }
+        .navbar .nav-link {
+            text-transform: uppercase;
+            font-weight: 600;
+            color: #212529;
+        }
+        .navbar .nav-link:hover {
+            color: #0d6efd;
+        }
+    </style>
+
+    <link rel="stylesheet" href="{% static 'shop/css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'fonts/montserrat:wght@300,400,500.css' %}"/>
+    <link rel="shortcut icon" type="image/png" href="{% static 'shop/images/favicon.ico' %}" >
+    {% block head %}{% endblock head %}
+</head>
+<body>
+    <div class="topbar border-bottom py-2">
+        <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+            <div>EN-US</div>
+            <div class="d-flex flex-wrap align-items-center gap-3">
+                <a href="mailto:info@somedomain.com">info@somedomain.com</a>
+                <span>1-800-123-1234</span>
+            </div>
+            <div class="d-flex gap-3">
+                <a href="#">Shipping</a>
+                <span>|</span>
+                <a href="#">Policy</a>
+            </div>
+        </div>
+    </div>
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="{% url 'shop:products' %}">BigCorp SHOP</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
+                aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="mainNavbar">
+                <div class="mx-lg-4 flex-fill site-search d-none d-lg-flex">
+                    <form action="{% url 'shop:search-products' %}" method="get" class="w-100">
+                        <div class="input-group">
+                            <input type="search" name="q" class="form-control border-success" placeholder="Search" aria-label="Search">
+                            <button class="btn btn-success" type="submit">Search</button>
+                        </div>
+                    </form>
+                </div>
+
+                <ul class="navbar-nav ms-auto align-items-center">
+                    {% for i in categories %}
+                        {% if not i.children.all %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{{ i.get_absolute_url }}">{{ i.name|upper }}</a>
+                            </li>
+                        {% else %}
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="catDropdown{{ forloop.counter }}" role="button"
+                                    data-bs-toggle="dropdown" aria-expanded="false">{{ i.name|upper }}</a>
+                                <ul class="dropdown-menu" aria-labelledby="catDropdown{{ forloop.counter }}">
+                                    <li><a class="dropdown-item" href="{{ i.get_absolute_url }}">All {{ i.name|title }}</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    {% for obj in i.children.all %}
+                                        <li><a class="dropdown-item" href="{{ obj.get_absolute_url }}">{{ obj.name|upper }}</a></li>
+                                        {% if obj.children.all %}
+                                            {% for subobj in obj.children.all %}
+                                                <li><a class="dropdown-item ps-4" href="{{ subobj.get_absolute_url }}">&mdash; {{ subobj.name|upper }}</a></li>
+                                            {% endfor %}
+                                        {% endif %}
+                                    {% endfor %}
+                                </ul>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Cart</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Account</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div id="message" class="container mt-3">
+                <div class="alert {{ message.tags }} alert-dismissible text-center" role="alert">
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    <strong>
+                        {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+                            ERROR: {{ message }}
+                        {% else %}
+                            {{ message.tags|title }}
+                        {% endif %}
+                    </strong>
+                    {{ message }}
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer id="main-footer" class="py-4 bg-light text-dark text-center">
+        <div class="container">
+            Copyright &copy; <span class="year"></span> BigCorp Shop
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3"
+        crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.9" integrity="sha384-QFjmbokDn2DjBjq+fM+8LUIVrAgqcNW2s0PjAxHETgRn9l4fvX31ZxDxvwQnyMOX" crossorigin="anonymous"></script>
+</body>
+</html>

@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block content %}
+
+<div class="container">
+
+    <main class="pt-5">
+
+        <div class="row g-3">
+
+            <div class="col-md-5 col-lg-5 order-md-first bg-light">
+
+                <img class="img-fluid mx-auto d-block" alt="{{ product.title }}" src="{{ product.image.url }}">
+
+            </div>
+
+            <div class="col-md-7 col-lg-7 ps-md-3 ps-lg-5">
+
+                <h1 class="mb-0 h4">{{ product.title }}</h1>
+                <strong>{{ product.brand }}</strong>
+
+                <hr>
+
+                <p>{{ product.description }}</p>
+
+                <div class="border">
+                    <div class="col border-bottom">
+                        <div class="row p-3">
+                            <div class="col-6">Price</div>
+                            {% if product.discount %}
+                                <div class="col-6 text-end"><span class="text-decoration-line-through fw-bold text-danger">$ {{ product.price }}</span> <span class="h4 fw-bold">$ {{ product.get_discounted_price }}</span></div>
+                            {% else %}
+                                <div class="col-6 text-end"><span class="h4 fw-bold">$ {{ product.price }}</span></div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <div class="row p-3">
+                            <div class="col-6">
+                                <label for="select">Qty</label>
+                                &nbsp;
+                                <select id="select" class="form-select d-inline-block w-auto">
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                    <option value="3">3</option>
+                                    <option value="4">4</option>
+                                </select>
+                            </div>
+
+                            <div class="col-6 text-end">
+                                <button type="button" id="add-button" value="{{ product.id }}" class="btn btn-secondary btn-sm">Add to cart</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <br>
+
+</div>
+
+<script>
+    // Simple UI-only cart behavior (project has no `cart` app/URLs)
+    document.addEventListener('DOMContentLoaded', function () {
+        const btn = document.getElementById('add-button');
+        if (!btn) return;
+        btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            btn.disabled = true;
+            btn.innerText = 'Added to cart';
+            btn.className = 'btn btn-success btn-sm';
+            const lbl = document.getElementById('lblCartCount');
+            if (lbl) {
+                const cur = parseInt(lbl.textContent) || 0;
+                lbl.textContent = cur + 1;
+            }
+        });
+    });
+</script>
+
+{% endblock %}
